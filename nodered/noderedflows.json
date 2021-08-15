@@ -1,0 +1,344 @@
+[
+    {
+        "id": "96088f4af274b13d",
+        "type": "tab",
+        "label": "Mainflow",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "68fd82cb55b3e256",
+        "type": "mqtt out",
+        "z": "96088f4af274b13d",
+        "name": "myout",
+        "topic": "car/recieve",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b7d44e2edfe72a13",
+        "x": 2390,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "bba53701e24da6f7",
+        "type": "inject",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "test",
+        "payloadType": "str",
+        "x": 1450,
+        "y": 820,
+        "wires": [
+            [
+                "4759e24ebecf95ee"
+            ]
+        ]
+    },
+    {
+        "id": "098ee199701182fc",
+        "type": "http response",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 2180,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "a8895700c74a94dd",
+        "type": "http in",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "url": "/keyboard",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1460,
+        "y": 920,
+        "wires": [
+            [
+                "098ee199701182fc"
+            ]
+        ]
+    },
+    {
+        "id": "4759e24ebecf95ee",
+        "type": "websocket out",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "server": "",
+        "client": "6a47cd6.209cd34",
+        "x": 1770,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "33ee89d6bc7d652b",
+        "type": "comment",
+        "z": "96088f4af274b13d",
+        "name": "test the websocket connection",
+        "info": "",
+        "x": 1510,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "72b94870e971f28e",
+        "type": "comment",
+        "z": "96088f4af274b13d",
+        "name": "website sending keystrokes",
+        "info": "<http://localhost:1880/keyboard>",
+        "x": 1500,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "3287bf88341cc461",
+        "type": "websocket in",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "server": "15eb5b0d.fb9095",
+        "client": "",
+        "x": 1470,
+        "y": 720,
+        "wires": [
+            [
+                "88c01117de283a1b",
+                "a799cd4d74ccb939"
+            ]
+        ]
+    },
+    {
+        "id": "c2971d6ffb9ab51b",
+        "type": "comment",
+        "z": "96088f4af274b13d",
+        "name": "receive keystrokes via websocket",
+        "info": "",
+        "x": 1510,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "bc89e33b06c8a06c",
+        "type": "ui_template",
+        "z": "96088f4af274b13d",
+        "group": "b7a44db54bb3d424",
+        "name": "",
+        "order": 1,
+        "width": "6",
+        "height": "6",
+        "format": "<html>\n    <body>\n        \n         <h1>A,W,S,D for Control</h1>\n         <div id=\"log\"></div>\n         \n         <script>\n         \n            var socket = new WebSocket(`ws://${document.location.host}/ws/keyboard`);\n            \n            function log(msg) {\n                \n            }\n             \n            socket.onopen = function () {\n                log(\"Connection opened\");\n            };\n            socket.onerror = function (errorEvent) {\n                log(\"Error! Connection closed\");\n            };\n            \n            document.addEventListener('keypress', function(evt) {\n                log(`Sending [${evt.key}]`)\n                socket.send(evt.key);\n            });\n            \n             \n         </script>\n         \n    </body>\n</html>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 1820,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88c01117de283a1b",
+        "type": "python-function",
+        "z": "96088f4af274b13d",
+        "name": "KeyboardStrokeToValue",
+        "func": "content = msg['payload']\nprint(content)\noutstring = [\"0\",\"0\",\"0\",\"0\"]\nif content == \"w\":\n    outstring[0] = \"1\"\nif content == \"s\":\n    outstring[1] = \"1\"\nif content == \"d\":\n    outstring[2] = \"1\"\nif content == \"a\":\n    outstring[3] = \"1\"\n\noutstring = ''.join(outstring)\nprint(outstring)\n\noutstring = {'payload':outstring}\n\nreturn outstring",
+        "outputs": 1,
+        "x": 2130,
+        "y": 720,
+        "wires": [
+            [
+                "68fd82cb55b3e256"
+            ]
+        ]
+    },
+    {
+        "id": "a799cd4d74ccb939",
+        "type": "trigger",
+        "z": "96088f4af274b13d",
+        "name": "resetControl",
+        "op1": "",
+        "op2": "resetControl",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "200",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 2,
+        "x": 1770,
+        "y": 620,
+        "wires": [
+            [],
+            [
+                "88c01117de283a1b",
+                "e578cba2c638fd0e"
+            ]
+        ]
+    },
+    {
+        "id": "e578cba2c638fd0e",
+        "type": "delay",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "8",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "x": 1770,
+        "y": 560,
+        "wires": [
+            [
+                "88c01117de283a1b"
+            ]
+        ]
+    },
+    {
+        "id": "0c89390896a6ca12",
+        "type": "ui_slider",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "label": "speed",
+        "tooltip": "",
+        "group": "b7a44db54bb3d424",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "200",
+        "max": "1000",
+        "step": 1,
+        "x": 2070,
+        "y": 560,
+        "wires": [
+            [
+                "f6dc95cbedbd6c48"
+            ]
+        ]
+    },
+    {
+        "id": "f6dc95cbedbd6c48",
+        "type": "mqtt out",
+        "z": "96088f4af274b13d",
+        "name": "myout",
+        "topic": "car/speed",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b7d44e2edfe72a13",
+        "x": 2210,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "a54d740a38cfe0e3",
+        "type": "inject",
+        "z": "96088f4af274b13d",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "400",
+        "payloadType": "num",
+        "x": 2000,
+        "y": 480,
+        "wires": [
+            [
+                "f6dc95cbedbd6c48"
+            ]
+        ]
+    },
+    {
+        "id": "b7d44e2edfe72a13",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.25.27",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "6a47cd6.209cd34",
+        "type": "websocket-client",
+        "path": "ws://localhost:1880/ws/keyboard",
+        "tls": "",
+        "wholemsg": "false",
+        "hb": "0"
+    },
+    {
+        "id": "15eb5b0d.fb9095",
+        "type": "websocket-listener",
+        "path": "/ws/keyboard",
+        "wholemsg": "false"
+    },
+    {
+        "id": "b7a44db54bb3d424",
+        "type": "ui_group",
+        "name": "Standard",
+        "tab": "1e17eb2ba5fd4676",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "1e17eb2ba5fd4676",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
